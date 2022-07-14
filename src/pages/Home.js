@@ -2,17 +2,42 @@ import React,{useState} from 'react';
 import './Home.css'
 import uuid from 'react-uuid'
 import toast from 'react-hot-toast';
-
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+  const navigate = useNavigate();
   const [RoomId, SetRoomId] = useState('');
   const [username,setusername]=useState('');
+
   const createNewRoom = (e) => {
     e.preventDefault();
     const id = uuid()
     SetRoomId(id);
      toast.success('Created a new room');
   };
+
+  const joinroom = (e) => {
+    if (!RoomId || !username) {
+      e.preventDefault();
+      toast.error('Room Id & username is required');
+       return;
+    }
+
+    // Redirect
+    navigate(`/editor/${RoomId}`, {
+      state: {
+        username,
+      },
+    });
+  };
+
+  const handleInputEnter = (e) => {
+    if (e.code === 'Enter') {
+      joinroom();
+    }
+  };
+
+
   return (
 
     <div class="container">
@@ -31,8 +56,10 @@ const Home = () => {
                 value={username} />
             </div>
 
-            <button class="button login__submit">
-              <span class="button__text">Log In </span>
+            <button class="button login__submit"
+            onClick={joinroom}
+              onKeyUp={handleInputEnter}>
+              <span class="button__text">Join </span>
               <i class="button__icon fas fa-chevron-right"></i>
             </button>
           </form>
